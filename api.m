@@ -51,6 +51,16 @@ static id GetNullableObjectAtIndex(NSArray<id> *array, NSInteger key) {
 }
 @end
 
+@implementation DesignVariantBox
+- (instancetype)initWithValue:(DesignVariant)value {
+  self = [super init];
+  if (self) {
+    _value = value;
+  }
+  return self;
+}
+@end
+
 @interface Token ()
 + (Token *)fromList:(NSArray<id> *)list;
 + (nullable Token *)nullableFromList:(NSArray<id> *)list;
@@ -92,14 +102,18 @@ static id GetNullableObjectAtIndex(NSArray<id> *array, NSInteger key) {
 + (instancetype)makeWithPaymentSystemId:(nullable NSString *)paymentSystemId
     locale:(nullable NSString *)locale
     pinfl:(nullable NSString *)pinfl
+    phoneNumber:(nullable NSString *)phoneNumber
     environment:(nullable ManiEnvironmentBox *)environment
-    residentType:(nullable ManiResidentTypeBox *)residentType {
+    residentType:(nullable ManiResidentTypeBox *)residentType
+    designVariant:(nullable DesignVariantBox *)designVariant {
   HostInfo* pigeonResult = [[HostInfo alloc] init];
   pigeonResult.paymentSystemId = paymentSystemId;
   pigeonResult.locale = locale;
   pigeonResult.pinfl = pinfl;
+  pigeonResult.phoneNumber = phoneNumber;
   pigeonResult.environment = environment;
   pigeonResult.residentType = residentType;
+  pigeonResult.designVariant = designVariant;
   return pigeonResult;
 }
 + (HostInfo *)fromList:(NSArray<id> *)list {
@@ -107,8 +121,10 @@ static id GetNullableObjectAtIndex(NSArray<id> *array, NSInteger key) {
   pigeonResult.paymentSystemId = GetNullableObjectAtIndex(list, 0);
   pigeonResult.locale = GetNullableObjectAtIndex(list, 1);
   pigeonResult.pinfl = GetNullableObjectAtIndex(list, 2);
-  pigeonResult.environment = GetNullableObjectAtIndex(list, 3);
-  pigeonResult.residentType = GetNullableObjectAtIndex(list, 4);
+  pigeonResult.phoneNumber = GetNullableObjectAtIndex(list, 3);
+  pigeonResult.environment = GetNullableObjectAtIndex(list, 4);
+  pigeonResult.residentType = GetNullableObjectAtIndex(list, 5);
+  pigeonResult.designVariant = GetNullableObjectAtIndex(list, 6);
   return pigeonResult;
 }
 + (nullable HostInfo *)nullableFromList:(NSArray<id> *)list {
@@ -119,8 +135,10 @@ static id GetNullableObjectAtIndex(NSArray<id> *array, NSInteger key) {
     self.paymentSystemId ?: [NSNull null],
     self.locale ?: [NSNull null],
     self.pinfl ?: [NSNull null],
+    self.phoneNumber ?: [NSNull null],
     self.environment ?: [NSNull null],
     self.residentType ?: [NSNull null],
+    self.designVariant ?: [NSNull null],
   ];
 }
 @end
@@ -143,6 +161,11 @@ static id GetNullableObjectAtIndex(NSArray<id> *array, NSInteger key) {
       {
         NSNumber *enumAsNumber = [self readValue];
         return enumAsNumber == nil ? nil : [[ManiResidentTypeBox alloc] initWithValue:[enumAsNumber integerValue]];
+      }
+    case 133: 
+      {
+        NSNumber *enumAsNumber = [self readValue];
+        return enumAsNumber == nil ? nil : [[DesignVariantBox alloc] initWithValue:[enumAsNumber integerValue]];
       }
     default:
       return [super readValueOfType:type];
@@ -167,6 +190,10 @@ static id GetNullableObjectAtIndex(NSArray<id> *array, NSInteger key) {
   } else if ([value isKindOfClass:[ManiResidentTypeBox class]]) {
     ManiResidentTypeBox * box = (ManiResidentTypeBox *)value;
     [self writeByte:132];
+    [self writeValue:(value == nil ? [NSNull null] : [NSNumber numberWithInteger:box.value])];
+  } else if ([value isKindOfClass:[DesignVariantBox class]]) {
+    DesignVariantBox * box = (DesignVariantBox *)value;
+    [self writeByte:133];
     [self writeValue:(value == nil ? [NSNull null] : [NSNumber numberWithInteger:box.value])];
   } else {
     [super writeValue:value];
